@@ -132,6 +132,11 @@ class Post
         return $this;
     }
 
+    public function addLikes() : self{
+        $this->NumLikes++;
+        return $this;
+    }
+
     public function getNumComments(): ?string
     {
         return $this->NumComments;
@@ -154,6 +159,8 @@ class Post
 
         return $this;
     }
+
+
 
     /**
      * @return Collection<int, Comment>

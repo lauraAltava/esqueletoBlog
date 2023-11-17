@@ -18,10 +18,25 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class BlogController extends AbstractController
 {
-    #[Route("/blog/buscar/{page}", name: 'blog_buscar')]
+    #[Route("/blog/buscar", name: 'blog_buscar')]
     public function buscar(ManagerRegistry $doctrine,  Request $request, int $page = 1): Response
     {
-       return new Response("Buscar");
+        $repository = $doctrine->getRepository(Post::class);
+        $searchTerm = $request->query->get('searchTerm') ?? "";
+        $posts = null;
+        if (!empty($searchTerm)){
+            $posts = $repository->findByText($request->query->get('searchTerm') ?? "");
+            return $this->render('blog/blog.html.twig', [
+                'posts' => $posts,
+            ]);
+
+        }else{
+           
+       return new Response("No se encontró nada");
+           
+        }
+            
+
     } 
    
     #[Route("/blog/new", name: 'new_post')]
@@ -74,10 +89,40 @@ class BlogController extends AbstractController
 }
 
     #[Route("/single_post/{slug}/like", name: 'post_like')]
-    public function like(ManagerRegistry $doctrine, $slug): Response
+    public function like(ManagerRegistry $doctrine, $slug, EntityManagerInterface $entityManager ): Response
     {
-        return new Response("like");
+        $repository = $doctrine->getRepository(Post::class);
+        $post= $repository->findOneBy(["Slug" => $slug]);
+        if($post){
+            
+            $post->addLikes();
+            
+            $entityManager->persist($post);
+            $entityManager->flush();
+            return $this->redirectToRoute('blog');
+        }
+    }
 
+    #[Route("/blog/{slug}/comment", name: 'post_comment')]
+    public function comment(ManagerRegistry $doctrine, $slug, EntityManagerInterface $entityManager ): Response
+    {
+        $user = $this->getUser();
+        
+       
+        $comment = new Comment();
+        $formulario = $this->createForm(CommentFormType::class, $comment);
+        $formulario->handleRequest($request);
+        
+        $repository = $doctrine->getRepository(Post::class);
+        $post= $repository->findOneBy(["Slug" => $slug]);
+        if($post){
+            
+            $post->setText();
+            
+            $entityManager->persist($post);
+            $entityManager->flush();
+            return $this->redirectToRoute('blog');
+        }
     }
 
     #[Route("/blog", name: 'blog')]
