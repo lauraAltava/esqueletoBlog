@@ -125,26 +125,42 @@ class BlogController extends AbstractController
         }
     }
 
-    #[Route("/blog", name: 'blog')]
-    public function index(ManagerRegistry $doctrine): Response
+    #[Route('/blog/{page}', name: 'blog')]
+    public function index(ManagerRegistry $doctrine, int $page = 1): Response
     {
         $repository = $doctrine->getRepository(Post::class);
-        $posts = $repository->findAll();
-        
+        $posts = $repository->findAllPaginated($page);
+    
         return $this->render('blog/blog.html.twig', [
             'posts' => $posts,
         ]);
     }
+    
 
     #[Route("/single_post/{slug}", name: 'single_post')]
-    public function post(ManagerRegistry $doctrine, Request $request, $slug ): Response
+    public function post(ManagerRegistry $doctrine, Request $request, $slug): Response
     {
         $repository = $doctrine->getRepository(Post::class);
-        $post = $repository->findOneBy(['Slug' => $slug]);
-
+        $post = $repository->findOneBy(["Slug"=>$slug]);
+        $recents = $repository->findRecents();
+        $comment = new Comment();
+        $form = $this->createForm(CommentFormType::class, $comment);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment = $form->getData();
+            $comment->setPost($post);  
+            //Aumentamos en 1 el número de comentarios del post
+            $post->setNumComments($post->getNumComments() + 1);
+            $entityManager = $doctrine->getManager();    
+            $entityManager->persist($comment);
+            $entityManager->flush();
+            return $this->redirectToRoute('single_post', ["slug" => $post->getSlug()]);
+        }
         return $this->render('blog/single_post.html.twig', [
             'post' => $post,
-
+            'recents' => $recents,
+            'commentForm' => $form->createView()
         ]);
     }
+
 }

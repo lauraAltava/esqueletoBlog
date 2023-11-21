@@ -24,6 +24,8 @@ class PostFormType extends AbstractType
                         'mimeTypes' => [
                             'image/jpeg',
                             'image/png',
+                            'image/avif',
+                            'image/webp',
                         ],
                         'mimeTypesMessage' => 'Please upload a valid image file',
                     ])
