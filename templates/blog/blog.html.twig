@@ -108,14 +108,13 @@
 <div class="post">
 
 
-		{% if posts %}
-			{% for post in posts %}
 
-				{{include ("partials/recent_post.html.twig", {'recent' : post})}}
-
-			{% endfor %}
-		{% endif %}
-
+        <h4>Recent Post</h4>
+        <hr class="subtitle1">
+        {% for recent in recents %}
+        {{ include ('partials/recent_post.html.twig', {'recent': recent}) }}
+        {% endfor %}
+      
 
 	</div>
 

@@ -130,9 +130,11 @@ class BlogController extends AbstractController
     {
         $repository = $doctrine->getRepository(Post::class);
         $posts = $repository->findAllPaginated($page);
+        $recents = $repository->findRecents();
     
         return $this->render('blog/blog.html.twig', [
             'posts' => $posts,
+            'recents' => $recents,
         ]);
     }
     

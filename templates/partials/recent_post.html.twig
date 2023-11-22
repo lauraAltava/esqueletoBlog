@@ -1,17 +1,17 @@
 <div class="new new1">
 	<hr>
 	<div class="post-heading">
-		<span>{{ post.publishedAt | date('d') }}
-			{{ post.publishedAt | date('F') }}</span>
+		<span>{{recent.publishedAt | date('d') }}
+			{{ recent.publishedAt | date('F') }}</span>
 
-		<img class="img-responsive" src="{{ asset('images/index/gallery/' ~ post.image) }}" alt="{{post.title}}">
+		<img class="img-responsive" src="{{ asset('images/index/gallery/' ~ recent.image) }}" alt="{{recent.title}}">
 	</div>
 	<div class="post-body">
 		<span>
 			<i class="fa fa-heart sr-icons"></i>
-			{{post.numLikes}}
+			{{recent.numLikes}}
 			<i class="fa fa-comments sr-icons"></i>
-			{{post.numComments}}
+			{{recent.numComments}}
 		</span>
 		<h4 class="text-left">
 			<a href="{{ path('single_post', {'slug':recent.slug}) }}">{{ recent.title }}</a>
@@ -21,4 +21,4 @@
 
 		</h4>
 	</div>
-</div></div>
+</div>
